@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +38,19 @@ namespace ARandomString
             }
 
             app.UseMvc();
+
+            var addressFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
+            if(addressFeature!=null)
+            {
+                var address = addressFeature.Addresses.First();
+                var index = address.LastIndexOf(':');
+                if(index!=-1)
+                {
+                    string port = address.Substring(index+1);
+                    HttpClient client = new HttpClient();
+                    client.PostAsJsonAsync("http://localhost:58466/api/Servers", port);
+                }
+            }
         }
     }
 }

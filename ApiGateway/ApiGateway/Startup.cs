@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,11 +45,29 @@ namespace ApiGateway
             app.RunProxy(
                 async context =>
                 {
-                    var host = serverPool.Next();
+                    if (serverPool.Any())
+                    {
+                        var host = serverPool.Next();
 
-                    return await context
-                        .ForwardTo(host)
-                        .Send();
+                        var response = await context
+                            .ForwardTo(host)
+                            .Send();
+
+                        while (response.StatusCode == HttpStatusCode.ServiceUnavailable && host != null)
+                        {
+                            serverPool.Remove(host);
+                            host = serverPool.Next();
+                            if (host != null)
+                            {
+                                response = await context
+                                    .ForwardTo(host)
+                                    .Send();
+                            }
+                        }
+                        return response;
+                    }
+
+                    return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
                 });
         }
     }

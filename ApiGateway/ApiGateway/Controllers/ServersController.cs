@@ -32,9 +32,12 @@ namespace ApiGateway.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string serverAddress)
+        public void Post([FromBody] string port)
         {
-            serverPool.Add(new UpstreamHost(serverAddress));
+            var ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            if (ip == "0.0.0.1") ip = "127.0.0.1";
+            var address = "http://" +  ip + ":" + port;
+            serverPool.Add(new UpstreamHost(address));
         }
     }
 }

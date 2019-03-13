@@ -14,11 +14,13 @@ namespace ARandomString
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            var rnd = new Random();
+            CreateWebHostBuilder(args, rnd.Next(6000, 6999)).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args, int port) =>
             WebHost.CreateDefaultBuilder(args)
+            .UseUrls("http://*:" + port)
                 .UseStartup<Startup>();
     }
 }

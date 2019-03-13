@@ -14,6 +14,7 @@ namespace ARandomString.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
+            Console.WriteLine("Minult asdasdas");
             var rnd = new Random();
 
             return new string[] { "value1", "value2", "value" + rnd.Next()*10000 };

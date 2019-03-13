@@ -18,6 +18,8 @@ namespace ApiGateway
         private readonly ReaderWriterLockSlim _lockSlim = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private long _position = -1;
 
+        public ServerPool() { }
+
         /// <summary>
         ///     Initializes a new instance of <see cref="RoundRobin"/>
         /// </summary>
